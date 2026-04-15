@@ -1,7 +1,7 @@
 # Experiment Report: Data Quality Impact on AI Agent
 
-**Student ID:** AI20K-thagn123
-**Name:** Dao Quang Thang
+**Student ID:** AI20K-2A202600030
+**Name:** Đào Quang Thắng
 **Date:** 2026-04-15
 
 ---
