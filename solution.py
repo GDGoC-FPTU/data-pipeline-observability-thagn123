@@ -2,29 +2,8 @@
 ==============================================================
 Day 10 Lab: Build Your First Automated ETL Pipeline
 ==============================================================
-Student ID: AI20K-2A202600030  (<-- Thay XXXX bang ma so cua ban)
+Student ID: 2A202600030
 Name: Đào Quang Thắng
-
-Nhiem vu:
-   1. Extract:   Doc du lieu tu file JSON
-   2. Validate:  Kiem tra & loai bo du lieu khong hop le
-   3. Transform: Chuan hoa category + tinh gia giam 10%
-   4. Load:      Luu ket qua ra file CSV
-
-Cham diem tu dong:
-   - Script phai chay KHONG LOI (20d)
-   - Validation: loai record gia <= 0, category rong (10d)
-   - Transform: discounted_price + category Title Case (10d)
-   - Logging: in so record processed/dropped (10d)
-   - Timestamp: them cot processed_at (10d)
-==============================================================
-"""
-"""
-==============================================================
-Day 10 Lab: Build Your First Automated ETL Pipeline
-==============================================================
-Student ID: AI20K-thagn123
-Name: Dao Quang Thang
 
 Nhiem vu:
    1. Extract:   Doc du lieu tu file JSON
@@ -63,17 +42,11 @@ def extract(file_path):
         list: Danh sach cac records (dictionaries)
     """
     print(f"Extracting data from {file_path}...")
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        print(f"Extracted {len(data)} records.")
-        return data
-    except FileNotFoundError:
-        print(f"ERROR: File '{file_path}' not found.")
-        return []
-    except json.JSONDecodeError as e:
-        print(f"ERROR: Failed to parse JSON - {e}")
-        return []
+    # TODO: Viet code doc file JSON o day
+    # Vi du:
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    return data
 
 
 def validate(data):
@@ -95,20 +68,17 @@ def validate(data):
     valid_records = []
     error_count = 0
 
+    # TODO: Lap qua data, kiem tra tung record
+    # Giu lai record hop le, dem record loi
     for record in data:
         price = record.get('price', 0)
-        category = record.get('category', '')
+        category = record.get('category', '').strip()
 
-        if price <= 0:
-            print(f"  [DROPPED] ID={record.get('id')} - Invalid price: {price}")
-            error_count += 1
-        elif not category or str(category).strip() == '':
-            print(f"  [DROPPED] ID={record.get('id')} - Empty category")
-            error_count += 1
-        else:
+        if price > 0 and category:
             valid_records.append(record)
-
-    print(f"Validation complete. {len(valid_records)} valid records kept, {error_count} dropped.")
+        else:
+            error_count += 1
+    print(f"Validation complete: {len(valid_records)} valid, {error_count} dropped")
     return valid_records
 
 
@@ -130,11 +100,11 @@ def transform(data):
     Returns:
         pd.DataFrame: DataFrame da duoc transform
     """
+    # TODO: Tao DataFrame va ap dung transformations
     df = pd.DataFrame(data)
     df['discounted_price'] = df['price'] * 0.9
     df['category'] = df['category'].str.title()
     df['processed_at'] = datetime.datetime.now().isoformat()
-    print(f"Transform complete. {len(df)} records transformed.")
     return df
 
 
@@ -145,6 +115,7 @@ def load(df, output_path):
     Goi y:
        - df.to_csv(output_path, index=False)
     """
+    # TODO: Luu DataFrame ra CSV
     df.to_csv(output_path, index=False)
     print(f"Data saved to {output_path}")
 
@@ -163,10 +134,6 @@ if __name__ == "__main__":
     if raw_data:
         # 2. Validate
         clean_data = validate(raw_data)
-
-        # Observability summary
-        num_dropped = len(raw_data) - len(clean_data)
-        print(f"PIPELINE SUMMARY: {len(clean_data)} records processed, {num_dropped} records dropped (invalid).")
 
         # 3. Transform
         final_df = transform(clean_data)
