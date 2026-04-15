@@ -19,6 +19,27 @@ Cham diem tu dong:
    - Timestamp: them cot processed_at (10d)
 ==============================================================
 """
+"""
+==============================================================
+Day 10 Lab: Build Your First Automated ETL Pipeline
+==============================================================
+Student ID: AI20K-thagn123
+Name: Dao Quang Thang
+
+Nhiem vu:
+   1. Extract:   Doc du lieu tu file JSON
+   2. Validate:  Kiem tra & loai bo du lieu khong hop le
+   3. Transform: Chuan hoa category + tinh gia giam 10%
+   4. Load:      Luu ket qua ra file CSV
+
+Cham diem tu dong:
+   - Script phai chay KHONG LOI (20d)
+   - Validation: loai record gia <= 0, category rong (10d)
+   - Transform: discounted_price + category Title Case (10d)
+   - Logging: in so record processed/dropped (10d)
+   - Timestamp: them cot processed_at (10d)
+==============================================================
+"""
 
 import json
 import pandas as pd
@@ -53,6 +74,8 @@ def extract(file_path):
     except json.JSONDecodeError as e:
         print(f"ERROR: Failed to parse JSON - {e}")
         return []
+
+
 def validate(data):
     """
     Task 2: Kiem tra chat luong du lieu.
@@ -85,7 +108,7 @@ def validate(data):
         else:
             valid_records.append(record)
 
-    print(f"Validation complete. Valid: {len(valid_records)}, Errors (dropped): {error_count}")
+    print(f"Validation complete. {len(valid_records)} valid records kept, {error_count} dropped.")
     return valid_records
 
 
@@ -113,6 +136,8 @@ def transform(data):
     df['processed_at'] = datetime.datetime.now().isoformat()
     print(f"Transform complete. {len(df)} records transformed.")
     return df
+
+
 def load(df, output_path):
     """
     Task 4: Luu DataFrame ra file CSV.
@@ -138,6 +163,10 @@ if __name__ == "__main__":
     if raw_data:
         # 2. Validate
         clean_data = validate(raw_data)
+
+        # Observability summary
+        num_dropped = len(raw_data) - len(clean_data)
+        print(f"PIPELINE SUMMARY: {len(clean_data)} records processed, {num_dropped} records dropped (invalid).")
 
         # 3. Transform
         final_df = transform(clean_data)
